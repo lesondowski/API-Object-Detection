@@ -5,7 +5,10 @@ import base64
 import requests
 from collections import Counter
 from fastapi import HTTPException
-from utils.config import MODEL_PATH, DEVICE
+from utils_cf import config
+
+MODEL_PATH = config.MODEL_PATH
+DEVICE = config.DEVICE
 
 # Khởi tạo model
 model = YOLO(MODEL_PATH).to(DEVICE)
