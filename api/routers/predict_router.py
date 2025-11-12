@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Body
-from src.api.schemas.request_model import PredictRequest
-from src.models.predict import load_image_from_url, detect_objects
+from api.schemas.request_model import PredictRequest
+from models.predict import load_image_from_url, detect_objects
 
 router = APIRouter(prefix="/predict", tags=["Predict"])
 

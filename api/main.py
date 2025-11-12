@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from src.api.routers import predict_router
+from api.routers import predict_router
 
 app = FastAPI(
     title="API phát hiện vật thể bằng mô hình YOLO",
