@@ -35,13 +35,10 @@ async def predict_images(request: PredictRequest = Body(...)):
             "API URL IMAGE": url
         }
         img = load_image_from_url(url)
-
-
-        
         results_can = model_object_detection(
             source=img,
-            iou = 0.25,
-            conf = 0.2
+            iou = request.iou_input,
+            conf = request.conf_input
         )   
         for r in results_can:
             for box in r.boxes:
@@ -51,8 +48,8 @@ async def predict_images(request: PredictRequest = Body(...)):
 
         results_other = model_instance_segmentation(
                             source=img,
-                            iou = 0.25,
-                            conf = 0.2,
+                            iou = request.iou_input,
+                            conf = request.conf_input,
                             device="cpu"
                         )
         for r in results_other:
