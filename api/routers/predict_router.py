@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Body
 from api.schemas.request_model import PredictRequest
-from models.predict import load_image_from_url, detect_objects, detect_instance_segmentation
+from models.predict import load_image_from_url
 from utils_cf import config
 from ultralytics import YOLO
 
@@ -14,7 +14,9 @@ DEVICE = config.DEVICE
 router = APIRouter(prefix="/predict", tags=["Predict"])
 
 model_object_detection = YOLO(MODELS_OD).to(DEVICE)
-model_instance_segmentation = YOLO(MODELS_SEG).to(DEVICE)
+model_instance_segmentation = YOLO(MODELS_SEG , task="segment")
+
+
 
 @router.post("/")
 async def predict_images(request: PredictRequest = Body(...)):
@@ -33,6 +35,9 @@ async def predict_images(request: PredictRequest = Body(...)):
             "API URL IMAGE": url
         }
         img = load_image_from_url(url)
+
+
+        
         results_can = model_object_detection(
             source=img,
             iou = 0.25,
@@ -47,7 +52,8 @@ async def predict_images(request: PredictRequest = Body(...)):
         results_other = model_instance_segmentation(
                             source=img,
                             iou = 0.25,
-                            conf = 0.2
+                            conf = 0.2,
+                            device="cpu"
                         )
         for r in results_other:
             for box in r.boxes:
