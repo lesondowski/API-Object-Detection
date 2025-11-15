@@ -5,9 +5,8 @@ numpy
 ultralytics
 requests
 python-multipart
-onnx==1.16.2
-onnxruntime==1.18.1
-Pillow==10.2.0
-fastapi[all]
-loguru==0.7.2
-coloredlogs==15.0.1
+onnx
+onnxruntime
+Pillow
+loguru
+coloredlogs
