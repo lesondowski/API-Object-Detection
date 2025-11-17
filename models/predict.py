@@ -1,18 +1,9 @@
-from ultralytics import YOLO
 import numpy as np
 import cv2
 import base64
 import requests
-from collections import Counter
 from fastapi import HTTPException
-from utils_cf import config
 
-MODELS_OD = config.MODEL_POD
-MODELS_SEG = config.MODEL_PIS
-DEVICE = config.DEVICE
-
-
-model_instance_segmentation = YOLO(MODELS_SEG)
 
 def load_image_from_url(url: str):
     resp = requests.get(url, stream=True)

@@ -6,16 +6,17 @@ from ultralytics import YOLO
 
 
 ### call model predict functions from models/predict.py
-MODELS_OD = config.MODEL_POD
-MODELS_SEG = config.MODEL_PIS
+MODEL_OD_PT = config.MODEL_OD_PT 
+MODEL_IS_ONNX = config.MODEL_IS_ONNX 
 DEVICE = config.DEVICE
+
 
 ### Define the API router &
 router = APIRouter(prefix="/predict", tags=["Predict"])
 
-model_object_detection = YOLO(MODELS_OD).to(DEVICE)
-model_instance_segmentation = YOLO(MODELS_SEG , task="segment")
 
+model_object_detection = YOLO(MODEL_OD_PT).to(DEVICE)
+model_instance_segmentation = YOLO(MODEL_IS_ONNX, task="segment")
 
 
 @router.post("/")
@@ -26,6 +27,8 @@ async def predict_images(request: PredictRequest = Body(...)):
         "image_urls": ["https://example.com/image.jpg"]
     }
     """
+
+
     if not request.image_urls:
         raise HTTPException(status_code=400, detail="No image provided")
 
@@ -50,7 +53,7 @@ async def predict_images(request: PredictRequest = Body(...)):
                             source=img,
                             iou = request.iou_input,
                             conf = request.conf_input,
-                            device="cpu"
+                            device ="cpu"
                         )
         for r in results_other:
             for box in r.boxes:
@@ -58,6 +61,7 @@ async def predict_images(request: PredictRequest = Body(...)):
                 class_name = str(model_instance_segmentation.names[class_id])
                 results_class[class_name] = results_class.get(class_name,0) + 1
         final_results.append(results_class)
+        
     return {
         "results":final_results
     }
