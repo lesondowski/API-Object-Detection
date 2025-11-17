@@ -11,7 +11,7 @@ MODEL_IS_ONNX = config.MODEL_IS_ONNX
 DEVICE = config.DEVICE
 
 
-### Define the API router &
+### Define the API router & 
 router = APIRouter(prefix="/predict", tags=["Predict"])
 
 
