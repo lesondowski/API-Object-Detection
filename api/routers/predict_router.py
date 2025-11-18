@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Body
 from api.schemas.request_model import PredictRequest
-from models.predict import load_image_from_url
+from models.predict import load_image_from_url, encode_image_to_base64, Detected
 from utils_cf import config
 from ultralytics import YOLO
 
@@ -33,35 +33,44 @@ async def predict_images(request: PredictRequest = Body(...)):
         raise HTTPException(status_code=400, detail="No image provided")
 
     final_results = []
+
     for url in request.image_urls:
         results_class = {
-            "API URL IMAGE": url
+            "API URL IMAGE" : url
         }
-        img = load_image_from_url(url)
-        results_can = model_object_detection(
-            source=img,
-            iou = request.iou_input,
-            conf = request.conf_input
-        )   
-        for r in results_can:
-            for box in r.boxes:
-                class_id = int(box.cls)
-                class_name = str(model_object_detection.names[class_id])
-                results_class[class_name] = results_class.get(class_name,0) + 1
+        results_class.update(Detected(
+            result=results_class,
+            url=url,
+            task="detect",
+            model = model_object_detection,
+            request=request
+        ))
+        results_class.update(Detected(
+            result=results_class,
+            url=url,
+            task="segment",
+            model=model_instance_segmentation,
+            request=request
+        ))
 
-        results_other = model_instance_segmentation(
-                            source=img,
-                            iou = request.iou_input,
-                            conf = request.conf_input,
-                            device ="cpu"
-                        )
-        for r in results_other:
-            for box in r.boxes:
-                class_id = int(box.cls) 
-                class_name = str(model_instance_segmentation.names[class_id])
-                results_class[class_name] = results_class.get(class_name,0) + 1
+        if results_class.get(request.type_product) >= request.repuirements_count:
+            results_class.update(
+                {
+                    "Kết Quả": "Đạt"
+                }
+            )
+        else:
+            results_class.update(
+                {
+                    "Kết Quả": "Không Đạt"
+                }
+            )
+
+
         final_results.append(results_class)
-        
+
+
+
     return {
         "results":final_results
     }
