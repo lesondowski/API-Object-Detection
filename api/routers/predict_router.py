@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Body
 from api.schemas.request_model import PredictRequest
-from models.predict import load_image_from_url, encode_image_to_base64, Detected
+from models.predict import Detected, max_detect
 from utils_cf import config
 from ultralytics import YOLO
 
@@ -27,8 +27,6 @@ async def predict_images(request: PredictRequest = Body(...)):
         "image_urls": ["https://example.com/image.jpg"]
     }
     """
-
-
     if not request.image_urls:
         raise HTTPException(status_code=400, detail="No image provided")
 
@@ -53,23 +51,24 @@ async def predict_images(request: PredictRequest = Body(...)):
             request=request
         ))
 
-        if results_class.get(request.type_product) >= request.repuirements_count:
-            results_class.update(
-                {
-                    "Kết Quả": "Đạt"
-                }
-            )
-        else:
-            results_class.update(
-                {
-                    "Kết Quả": "Không Đạt"
-                }
-            )
 
 
         final_results.append(results_class)
 
+    count = max_detect(results=final_results, portion=request.portion)
 
+    for item in final_results:
+        if count >= request.repuirements_count:
+            item["Số Lượng"] = count
+            item["Kết Quả"] = "Đạt"
+        else:
+            item["Số lượng"] = count
+            item["Kết Quả"] = "Không Đạt"
+
+            if count > 0:
+                item["Lý Do"] = "HÌNH ẢNH SẢN PHẨM KHÔNG ĐẠT YÊU CẦU - KHÔNG ĐỦ SỐ LƯỢNG"
+            else:
+                item["Lý Do"] = "KHÔNG CÓ HÌNH ẢNH VẬT PHẨM TRƯNG BÀY"
 
     return {
         "results":final_results

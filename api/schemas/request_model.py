@@ -5,7 +5,7 @@ class PredictRequest(BaseModel):
     image_urls: Optional[List[HttpUrl]] = None  # Danh sách URL ảnh
     conf_input:  Optional[float] = 0.24 ### Rank chỉ nên để từ 0.2 - 0.6, nếu các trường hợp bất khả kháng mới nên điều chỉnh 0.1
     iou_input:  Optional[float] = 0.2 ### thường để mặc định, nhưng chỉ nên setup rank từ 0.1 - 0.3
-    type_product: Optional[str] = "Lon & Chai"
+    portion: Optional[str] = "Lon & Chai" # chỉ loại suất (Loại suất sẽ tương ứng với classes trong model)
     repuirements_count: Optional[int] = 1
 
 

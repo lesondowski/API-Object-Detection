@@ -3,6 +3,17 @@ import cv2
 import base64
 import requests
 from fastapi import HTTPException
+from utils_cf import config
+from ultralytics import YOLO
+
+
+MODEL_OD_PT = config.MODEL_OD_PT 
+MODEL_IS_ONNX = config.MODEL_IS_ONNX 
+DEVICE = config.DEVICE
+
+MODEL_OD = YOLO(MODEL_OD_PT).to(DEVICE)
+MODEL_IS = YOLO(MODEL_IS_ONNX, task="segment")
+
 
 
 
@@ -17,7 +28,6 @@ def load_image_from_url(url: str):
 def encode_image_to_base64(img):
     _, buffer = cv2.imencode(".jpg", img)
     return base64.b64encode(buffer).decode("utf-8")
-
 
 def Detected(result: dict, url: str, task: str, model, request):
     img = load_image_from_url(url)
@@ -44,5 +54,21 @@ def Detected(result: dict, url: str, task: str, model, request):
                 class_id = int(box.cls)
                 class_name = str(model.names[class_id])
                 result[class_name] = result.get(class_name,0) + 1
-    
+
     return result
+def max_detect(results: list, portion: str):
+    max = 0
+    flag = 0
+    for r_dict in results:
+        for key in r_dict:
+            if key == portion:
+                flag += 1
+                if max < r_dict[key]:
+                    max = r_dict[key]
+    if flag == 0:
+        return flag
+    else:
+        return max
+
+
+
