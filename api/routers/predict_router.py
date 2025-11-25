@@ -54,18 +54,15 @@ async def predict_images(request: PredictRequest = Body(...)):
 
     count = max_detect(results=final_results, portion=request.portion)
 
-    for item in final_results:
-        if count >= request.repuirements_count:
-            item["Số Lượng"] = count
-            item["Kết Quả"] = "Đạt"
-        else:
-            item["Số lượng"] = count
-            item["Kết Quả"] = "Không Đạt"
 
-            if count > 0:
-                item["Lý Do"] = "HÌNH ẢNH SẢN PHẨM KHÔNG ĐẠT YÊU CẦU - KHÔNG ĐỦ SỐ LƯỢNG"
-            else:
-                item["Lý Do"] = "KHÔNG CÓ HÌNH ẢNH VẬT PHẨM TRƯNG BÀY"
+    if count>= request.repuirements_count:
+        final_results.append({"Số Lượng" : count})
+        final_results.append({"Kết Quả" : "Đạt"})
+    else:
+        if count > 0:
+            final_results.append({"Số Lượng" : count, "Kết Quả": "Không Đạt", "Lý do": "HÌNH ẢNH SẢN PHẨM KHÔNG ĐẠT YÊU CẦU - KHÔNG ĐỦ SỐ LƯỢNG"})
+        else:
+            final_results.append({"Số Lượng" : count, "Kết Quả": "Không Đạt","Lý do": "KHÔNG CÓ HÌNH ẢNH VẬT PHẨM TRƯNG BÀY"})
 
     return {
         "results":final_results
