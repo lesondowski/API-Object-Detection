@@ -50,9 +50,6 @@ async def predict_images(request: PredictRequest = Body(...)):
             model=model_instance_segmentation,
             request=request
         ))
-
-
-
         final_results.append(results_class)
 
     count = max_detect(results=final_results, portion=request.portion)

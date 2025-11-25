@@ -57,18 +57,6 @@ def Detected(result: dict, url: str, task: str, model, request):
 
     return result
 def max_detect(results: list, portion: str):
-    max = 0
-    flag = 0
-    for r_dict in results:
-        for key in r_dict:
-            if key == portion:
-                flag += 1
-                if max < r_dict[key]:
-                    max = r_dict[key]
-    if flag == 0:
-        return flag
-    else:
-        return max
-
-
+    values = [r_dict[portion] for r_dict in results if portion in r_dict]
+    return max(values, default=0)
 
