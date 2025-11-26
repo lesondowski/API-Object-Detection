@@ -9,6 +9,7 @@ from ultralytics import YOLO
 MODEL_OD_PT = config.MODEL_OD_PT 
 MODEL_IS_ONNX = config.MODEL_IS_ONNX 
 DEVICE = config.DEVICE
+MODEL_BLOCK = config.MODEL_BLOCK_PT
 
 
 ### Define the API router & 
@@ -17,7 +18,7 @@ router = APIRouter(prefix="/predict", tags=["Predict"])
 
 model_object_detection = YOLO(MODEL_OD_PT).to(DEVICE)
 model_instance_segmentation = YOLO(MODEL_IS_ONNX, task="segment")
-
+model_block = YOLO(model=MODEL_BLOCK, task="segment")
 
 @router.post("/")
 async def predict_images(request: PredictRequest = Body(...)):
@@ -50,14 +51,20 @@ async def predict_images(request: PredictRequest = Body(...)):
             model=model_instance_segmentation,
             request=request
         ))
+        results_class.update(Detected(
+            result=results_class,
+            url=url,
+            task="segment",
+            model= model_block,
+            request=request
+        ))
         final_results.append(results_class)
 
     count = max_detect(results=final_results, portion=request.portion)
 
 
     if count>= request.repuirements_count:
-        final_results.append({"Số Lượng" : count})
-        final_results.append({"Kết Quả" : "Đạt"})
+        final_results.append({"Số Lượng" : count,"Kết Quả" : "Đạt", "Lý Do": ""})
     else:
         if count > 0:
             final_results.append({"Số Lượng" : count, "Kết Quả": "Không Đạt", "Lý do": "HÌNH ẢNH SẢN PHẨM KHÔNG ĐẠT YÊU CẦU - KHÔNG ĐỦ SỐ LƯỢNG"})

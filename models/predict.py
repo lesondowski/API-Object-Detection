@@ -54,9 +54,28 @@ def Detected(result: dict, url: str, task: str, model, request):
                 class_id = int(box.cls)
                 class_name = str(model.names[class_id])
                 result[class_name] = result.get(class_name,0) + 1
-
     return result
 def max_detect(results: list, portion: str):
     values = [r_dict[portion] for r_dict in results if portion in r_dict]
     return max(values, default=0)
+
+
+def detect_product(task:str, model_product, url:str, request, results:dict, model_block):
+    img = load_image_from_url(url=url)
+
+    if task == "count":
+        results = model_product(
+            source = img,
+            iou = request.iou_input,
+            conf= request.conf_input,
+            device = "cpu",
+            classes = [0]
+        )
+        for r in results:
+            for box in r.boxes:
+                class_id = int(box.cls)
+                class_name = str(model_product.names[class_id])
+                results[class_name] = results.get(class_name,0) + 1
+        
+
 
