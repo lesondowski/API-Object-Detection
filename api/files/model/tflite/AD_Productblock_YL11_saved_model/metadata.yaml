@@ -1,0 +1,21 @@
+description: Ultralytics YOLO11n-seg model trained on /content/Segmentation-Audit-2-1/data.yaml
+author: Ultralytics
+date: '2025-11-27T05:08:09.204564'
+version: 8.3.232
+license: AGPL-3.0 License (https://ultralytics.com/license)
+docs: https://docs.ultralytics.com
+stride: 32
+task: segment
+batch: 1
+imgsz:
+- 736
+- 736
+names:
+  0: Khối hàng
+args:
+  batch: 1
+  fraction: 1.0
+  half: false
+  int8: false
+  nms: false
+channels: 3

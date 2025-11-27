@@ -1,0 +1,28 @@
+description: Ultralytics YOLOv8n-seg model trained on /content/window-audit-segmentation-1/data.yaml
+author: Ultralytics
+date: '2025-11-27T05:10:14.346644'
+version: 8.3.232
+license: AGPL-3.0 License (https://ultralytics.com/license)
+docs: https://docs.ultralytics.com
+stride: 32
+task: segment
+batch: 1
+imgsz:
+- 640
+- 640
+names:
+  0: Block
+  1: Can
+  2: Cap Bottle
+  3: Cooler
+  4: POSM
+  5: Product Block
+  6: Rack
+  7: Signboard
+args:
+  batch: 1
+  fraction: 1.0
+  half: false
+  int8: false
+  nms: false
+channels: 3
