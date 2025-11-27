@@ -11,5 +11,5 @@ app.include_router(predict_router.router)
 
 @app.get("/")
 def root():
-    return {"message": "AUDIT YOLOV11 VERSION 1.O API is running"}
+    return {"message": "Uvicorn running on http://0.0.0.0:10000"}
 

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Body
 from api.schemas.request_model import PredictRequest
-from models.predict import Detected, max_detect
+from models.predict import Detected, max_detect, detect_block
 from utils_cf import config
 from ultralytics import YOLO
 
@@ -51,13 +51,13 @@ async def predict_images(request: PredictRequest = Body(...)):
             model=model_instance_segmentation,
             request=request
         ))
-        results_class.update(Detected(
-            result=results_class,
-            url=url,
-            task="segment",
-            model= model_block,
-            request=request
-        ))
+        if request.portion == "Thùng Hàng" or request.portion == "Khối Hàng":
+            results_class.update(detect_block(block_model=model_block,
+                                              product_model=model_instance_segmentation,
+                                              url=url,
+                                              request= request
+                                        ))
+
         final_results.append(results_class)
 
     count = max_detect(results=final_results, portion=request.portion)
