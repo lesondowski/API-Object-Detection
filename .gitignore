@@ -1,0 +1,21 @@
+
+# skip comit API key and yaml
+.env
+# ============ PYTHON ============
+__pycache__/
+*.pyc
+*.pyo
+
+# virtual environment
+venv/
+.venv/
+
+# ============ OS FILES ============
+.DS_Store
+Thumbs.db
+# ============ Archives ============
+*.zip
+*.tar
+*.mp4
+
+# ========== Pri-notebook ==========
