@@ -9,7 +9,6 @@ API phát hiện vật thể sử dụng mô hình YOLO (PyTorch / ONNX) và Fas
 - Hỗ trợ cả mô hình **PyTorch (.pt)** và **ONNX (.onnx)**
 - API đơn giản: POST `/predict/` với payload chứa `image_urls`
 - Hỗ trợ phân loại theo **portion** (ví dụ: "Lon & Chai", "Thùng Hàng", "Khối Hàng")
-- Tự động chọn thiết bị (GPU nếu có, ngược lại CPU)
 
 ---
 
@@ -105,13 +104,3 @@ Ví dụ trả về (cấu trúc mẫu):
 - Nếu lỗi tải ảnh: kiểm tra URL (mã trả về 200). Hàm `load_image_from_url` sẽ ném HTTPException nếu tải thất bại.
 - Nếu muốn chạy hoàn toàn trên CPU: ép `DEVICE = "cpu"` trong `utils_cf/config.py`.
 - Khi dùng ONNX, cần `onnxruntime` được cài đặt.
-
----
-
-## 📝 License & Contact
-- Vui lòng cho biết loại license mong muốn (ví dụ **MIT**) để tôi cập nhật phần `License`.
-- Nếu cần demo endpoint với file mẫu, Dockerfile, hoặc badge CI, tôi có thể thêm hướng dẫn.
-
----
-
-> Nếu bạn muốn chỉnh sửa nội dung (ngôn ngữ, thêm badges, hoặc hướng dẫn Docker), cho tôi biết và tôi sẽ cập nhật.
