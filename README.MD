@@ -1,106 +1,105 @@
-# API phát hiện vật thể (YOLOv11) 🔧
+# YOLO Object Detection API (No Copyright Statement) ✅
 
 **Mô tả ngắn:**
-API phát hiện vật thể sử dụng mô hình YOLO (PyTorch / ONNX) và FastAPI. Nhận đầu vào là danh sách URL ảnh, trả về các vật thể được phát hiện (số lượng, bounding box/segmentation theo mô hình).
+Dự án cung cấp một API phát hiện vật thể dựa trên mô hình YOLO, dùng FastAPI làm backend. Ứng dụng hỗ trợ gửi URL ảnh hoặc upload ảnh từ máy, thực hiện phát hiện và trả về kết quả cộng hình ảnh đã đánh dấu (bounding boxes) — tất cả xử lý trong bộ nhớ, không lưu file lên đĩa.
 
 ---
 
-## 🔎 Điểm nổi bật
-- Hỗ trợ cả mô hình **PyTorch (.pt)** và **ONNX (.onnx)**
-- API đơn giản: POST `/predict/` với payload chứa `image_urls`
-- Hỗ trợ phân loại theo **portion** (ví dụ: "Lon & Chai", "Thùng Hàng", "Khối Hàng")
+## 🔧 Tính năng chính
+- Nhận ảnh từ URL hoặc upload file qua form
+- Trả về JSON kết quả cho API programmatic (`/predict/`)
+- Giao diện web đơn giản (Jinja2) để submit URL/upload và xem ảnh đã annotate (`/` → form)
+- Vẽ bounding boxes bằng OpenCV; không lưu ảnh lên đĩa (in-memory + trả về data URI)
 
 ---
 
-## 📁 Cấu trúc dự án (chỉ mục chính)
+## 📁 Cấu trúc thư mục (tóm tắt)
 - `api/` — FastAPI app
-  - `main.py` — entrypoint (app)
-  - `routers/predict_router.py` — endpoint `/predict/`
-  - `schemas/request_model.py` — model request (Pydantic)
-- `models/predict.py` — logic load ảnh và gọi model (detect/segment)
-- `api/files/model/` — chứa mô hình (.pt, .onnx, tflite)
-- `utils_cf/config.py` — cấu hình đường dẫn mô hình, DEVICE
-- `requirements.txt` — dependencies
+  - `main.py` — entrypoint và cấu hình templates/static
+  - `routers/predict_router.py` — API và web routes
+- `models/predict.py` — load ảnh, gọi model, helper xử lý ảnh
+- `api/files/model/` — chứa các mô hình (.pt, .onnx, tflite)
+- `templates/` — Jinja2 HTML templates (home / results)
+- `static/` — tài nguyên tĩnh (CSS/JS nếu cần)
+- `requirements.txt` — thư viện cần cài đặt
 
 ---
 
-## ⚙️ Yêu cầu
-- Python >= 3.10  
-- Gói (có trong `requirements.txt`): `fastapi`, `uvicorn`, `ultralytics`, `onnxruntime`, `opencv-python`, `numpy`, `requests`, `Pillow`, `loguru`, v.v.
-
-Cài đặt:
+## ⚙️ Yêu cầu & cài đặt
+- Python 3.10+
+- Cài đặt dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
+Lưu ý: lần chạy đầu tiên có thể chậm do tải mô hình; cần có kết nối internet nếu mô hình cần tải.
+
 ---
 
-## 🛠 Cấu hình nhanh
-File `utils_cf/config.py` chứa:
-
+## 🛠 Cấu hình mô hình (quick)
+Mở `utils_cf/config.py` để chỉnh:
 ```python
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 MODEL_OD_PT = "api/files/model/pt/ADYL11m.pt"
 MODEL_IS_ONNX = "api/files/model/onnx/AD_YL11s_Seg_1.80.onnx"
 MODEL_BLOCK_PT = "api/files/model/pt/AD_Productblock_YL11.pt"
 ```
-- Thay đường dẫn nếu muốn dùng mô hình khác.
-- `DEVICE` tự phát hiện GPU (nếu torch có CUDA), bạn có thể ép về `"cpu"` khi cần.
+- Thay đường dẫn tới mô hình mong muốn nếu cần.
+- Để ép chạy trên CPU, đặt `DEVICE = "cpu"`.
 
 ---
 
-## ▶️ Chạy API
-Khởi chạy server (mặc định port 10000 trong cấu hình hiện tại):
-
+## ▶️ Chạy server (local)
 ```bash
-uvicorn api.main:app --host 0.0.0.0 --port 10000
+uvicorn api.main:app --reload --host 0.0.0.0 --port 10000
 ```
-Truy cập gốc: `GET /` (trả về thông báo server đang chạy)
+Mở trình duyệt tới `http://localhost:10000/` để truy cập giao diện web, hoặc dùng Postman để gọi API.
 
 ---
 
-## 📨 Endpoint chính
-
-**POST** `/predict/`  
-Body (JSON):
-
+## 📬 API & Web endpoints
+1) POST `/predict/` (JSON) — programmatic
+- Body JSON:
 ```json
 {
-  "image_urls": ["https://example.com/image1.jpg", "https://example.com/image2.jpg"],
+  "image_urls": ["https://example.com/img1.jpg"],
   "conf_input": 0.24,
   "iou_input": 0.2,
   "portion": "Lon & Chai",
   "repuirements_count": 1
 }
 ```
-- `image_urls`: danh sách URL ảnh (bắt buộc)
-- `conf_input`: confidence threshold (mặc định ~0.24)
-- `iou_input`: IOU threshold (mặc định ~0.2)
-- `portion`: tên lớp tổng hợp (ví dụ "Lon & Chai", "Thùng Hàng", ...)
-- `repuirements_count`: số lượng yêu cầu để được xem là "Đạt"
+- Trả về: JSON chứa thống kê phát hiện (số lượng theo lớp, thông tin block nếu áp dụng).
 
-Ví dụ trả về (cấu trúc mẫu):
+2) POST `/predict/detect_form` (form-data) — web form / Postman file upload
+- Fields (form-data):
+  - `image_urls` (text, mỗi URL 1 dòng)
+  - `files` (file, hỗ trợ nhiều files)
+  - `conf_input`, `iou_input`, `portion`, `repuirements_count`
+- Trả về: HTML trang kết quả có ảnh đã annotate (embedded data URI) và JSON counts.
 
-```json
-{
-  "results": [
-    { "API URL IMAGE": "https://.../img1.jpg", "Lon & Chai": 2, "OtherClass": 1 },
-    { "Số Lượng": 2, "Kết Quả": "Đạt", "Lý Do": "" }
-  ]
-}
+3) GET `/` — form web để input URL / upload ảnh.
+
+---
+
+## 🧪 Test nhanh bằng Postman / curl
+- JSON request (URL flow):
+```bash
+curl -X POST "http://localhost:10000/predict/" -H "Content-Type: application/json" -d '{"image_urls":["https://example.com/img.jpg"]}'
+```
+- File upload (form):
+```bash
+curl -X POST "http://localhost:10000/predict/detect_form" -F "files=@/path/to/image.jpg" -F "conf_input=0.24"
 ```
 
 ---
 
-## 🧾 Mô hình kèm theo (ví dụ có trong repo)
-- PT: `api/files/model/pt/ADYL11m.pt`, `AD_Productblock_YL11.pt`, ...
-- ONNX: `api/files/model/onnx/AD_YL11s_Seg_1.80.onnx`, ...
-- TFLite (saved models) nằm trong `api/files/model/tflite/...`
+## 💡 Gợi ý gỡ lỗi
+- `Cannot download image` → kiểm tra URL (public & trả mã 200).
+- `Cannot decode uploaded file` → kiểm tra file (khả năng OpenCV không đọc được; code có fallback dùng PIL).
+- Nếu inference quá chậm, thử giảm `conf_input`/`iou_input` hoặc chạy trên máy có GPU.
 
 ---
 
-## 💡 Ghi chú & hướng dẫn gỡ lỗi
-- Nếu lỗi tải ảnh: kiểm tra URL (mã trả về 200). Hàm `load_image_from_url` sẽ ném HTTPException nếu tải thất bại.
-- Nếu muốn chạy hoàn toàn trên CPU: ép `DEVICE = "cpu"` trong `utils_cf/config.py`.
-- Khi dùng ONNX, cần `onnxruntime` được cài đặt.
+Nếu bạn muốn tôi thêm: bản README tiếng Anh, Dockerfile mẫu, hoặc một Postman Collection mẫu để import — nói tôi biết mục nào bạn muốn tôi bổ sung.

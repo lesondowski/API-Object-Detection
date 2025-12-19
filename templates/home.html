@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+{% block title %}{% endblock %}
+{% block content %}
+<h1>YOLO Object Detection - Web UI</h1>
+<p>Gửi URL ảnh (mỗi URL 1 dòng) hoặc tải ảnh lên để detect. Kết quả sẽ hiển thị ảnh đã annotate kèm thông tin.</p>
+
+<form action="/predict/detect_form" method="post" enctype="multipart/form-data">
+  <div class="mb-3">
+    <label for="image_urls" class="form-label">Image URLs (1 per line)</label>
+    <textarea class="form-control" id="image_urls" name="image_urls" rows="3"></textarea>
+  </div>
+
+  <div class="mb-3">
+    <label for="files" class="form-label">Upload image(s)</label>
+    <input class="form-control" type="file" id="files" name="files" multiple>
+  </div>
+
+  <div class="row">
+    <div class="col-md-3 mb-3">
+      <label class="form-label">conf_input</label>
+      <input class="form-control" type="number" step="0.01" name="conf_input" value="0.24">
+    </div>
+    <div class="col-md-3 mb-3">
+      <label class="form-label">iou_input</label>
+      <input class="form-control" type="number" step="0.01" name="iou_input" value="0.2">
+    </div>
+    <div class="col-md-3 mb-3">
+      <label class="form-label">portion</label>
+      <select class="form-select" name="portion">
+        <option>Lon & Chai</option>
+        <option>Thùng Hàng</option>
+        <option>Khối Hàng</option>
+      </select>
+    </div>
+    <div class="col-md-3 mb-3">
+      <label class="form-label">repuirements_count</label>
+      <input class="form-control" type="number" name="repuirements_count" value="1">
+    </div>
+  </div>
+
+  <button type="submit" class="btn btn-primary">Detect</button>
+</form>
+
+{% endblock %}

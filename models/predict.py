@@ -144,3 +144,37 @@ def detect_block(block_model, product_model, url, request):
         "Tổng Lượng thùng": counts_product.get(0, 0)
     } 
     return results_dict
+
+
+def detect_block_image(block_model, product_model, img, request):
+    """Same as `detect_block` but accepts an image (numpy array) instead of a URL."""
+    # Predict blocks
+    results_block  = block_model.predict(
+        source=img,
+        conf = request.conf_input,
+        iou = request.iou_input,
+        classes  = [0]
+    )
+    cls_ids_block = results_block[0].boxes.cls.cpu().numpy().astype(int)
+    counts_block = safe_counter(Counter(cls_ids_block))
+
+    # Get max boxes per block
+    max_boxes_per_block = get_max_class_count(model=product_model, results=results_block)
+
+    # Predict products
+    results_product = product_model.predict(
+        source=img,
+        conf = request.conf_input,
+        iou = request.iou_input,
+        classes=[0]
+    )
+    cls_ids_prd = results_product[0].boxes.cls.cpu().numpy().astype(int)
+    counts_product = safe_counter(Counter(cls_ids_prd))
+
+    # Build results dict safely
+    results_dict = {
+        "Số lượng khối": counts_block.get(0, 0),
+        "Max thùng/khối": max_boxes_per_block,
+        "Tổng Lượng thùng": counts_product.get(0, 0)
+    } 
+    return results_dict

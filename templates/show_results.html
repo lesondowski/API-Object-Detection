@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% block title %}Results - YOLO API{% endblock %}
+{% block content %}
+<h1>Detection Results</h1>
+<a href="/" class="btn btn-secondary mb-3">Back</a>
+
+{% for item in images %}
+  <div class="card mb-3">
+    <div class="card-body">
+      {% if item.error %}
+        <div class="alert alert-danger">{{ item.error }}</div>
+      {% else %}
+        {% if item.url %}
+          <h5>Source URL: <a href="{{ item.url }}" target="_blank">{{ item.url }}</a></h5>
+        {% endif %}
+        {% if item.filename %}
+          <h5>Uploaded: {{ item.filename }}</h5>
+        {% endif %}
+
+        <div class="row">
+          <div class="col-md-6">
+            <img src="{{ item.image }}" class="img-fluid" alt="annotated">
+          </div>
+          <div class="col-md-6">
+            <h6>Counts</h6>
+            <pre>{{ item.counts }}</pre>
+            {% if item.block %}
+              <h6>Block Info</h6>
+              <pre>{{ item.block | tojson(indent=2, ensure_ascii=False) }}</pre>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endfor %}
+
+{% endblock %}
