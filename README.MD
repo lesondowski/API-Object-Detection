@@ -1,15 +1,15 @@
 # YOLO Object Detection API (No Copyright Statement) ✅
 
-**Mô tả ngắn:**
-Dự án cung cấp một API phát hiện vật thể dựa trên mô hình YOLO, dùng FastAPI làm backend. Ứng dụng hỗ trợ gửi URL ảnh hoặc upload ảnh từ máy, thực hiện phát hiện và trả về kết quả cộng hình ảnh đã đánh dấu (bounding boxes) — tất cả xử lý trong bộ nhớ, không lưu file lên đĩa.
+**Short Description:**
+This project provides an object detection API powered by a YOLO-based model, using FastAPI as the backend. The application supports both image URLs and direct image uploads from local machines, performs object detection, and returns results along with annotated images (bounding boxes).
 
 ---
 
 ## 🔧 Tính năng chính
-- Nhận ảnh từ URL hoặc upload file qua form
-- Trả về JSON kết quả cho API programmatic (`/predict/`)
-- Giao diện web đơn giản (Jinja2) để submit URL/upload và xem ảnh đã annotate (`/` → form)
-- Vẽ bounding boxes bằng OpenCV; không lưu ảnh lên đĩa (in-memory + trả về data URI)
+- Accept images via URL or direct file upload
+- JSON-based inference API for programmatic usage (`/predict/`)
+- Simple web interface (Jinja2) to submit URLs or upload images and view annotated results (`/` → form)
+- Bounding boxes rendered with OpenCV; no file persistence (in-memory processing with data URI responses)
 
 ---
 
@@ -92,14 +92,3 @@ curl -X POST "http://localhost:10000/predict/" -H "Content-Type: application/jso
 ```bash
 curl -X POST "http://localhost:10000/predict/detect_form" -F "files=@/path/to/image.jpg" -F "conf_input=0.24"
 ```
-
----
-
-## 💡 Gợi ý gỡ lỗi
-- `Cannot download image` → kiểm tra URL (public & trả mã 200).
-- `Cannot decode uploaded file` → kiểm tra file (khả năng OpenCV không đọc được; code có fallback dùng PIL).
-- Nếu inference quá chậm, thử giảm `conf_input`/`iou_input` hoặc chạy trên máy có GPU.
-
----
-
-Nếu bạn muốn tôi thêm: bản README tiếng Anh, Dockerfile mẫu, hoặc một Postman Collection mẫu để import — nói tôi biết mục nào bạn muốn tôi bổ sung.
