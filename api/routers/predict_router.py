@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Body, Request, UploadFile, File, Form
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from api.schemas.request_model import PredictRequest
+from api.schemas.client import PredictRequest
 from models.predict import Detected ,max_detect, detect_block, load_image_from_url, encode_image_to_base64, detect_block_image
 from utils_cf import config
 from ultralytics import YOLO
