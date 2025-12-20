@@ -1,4 +1,4 @@
-# YOLO Object Detection API (No Copyright Statement) ✅
+# YOLO Object Detection API 
 
 **Short Description:**  
 This project provides an object detection API powered by a YOLO-based model, using FastAPI as the backend. The application supports both image URLs and direct image uploads from local machines, performs object detection, and returns detection results along with annotated images (bounding boxes).
