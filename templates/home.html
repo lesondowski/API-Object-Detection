@@ -17,24 +17,24 @@
 
   <div class="row">
     <div class="col-md-3 mb-3">
-      <label class="form-label">conf_input</label>
-      <input class="form-control" type="number" step="0.01" name="conf_input" value="0.24">
+      <label class="form-label">conf</label>
+      <input class="form-control" type="number" step="0.01" name="conf_input" value="0.24", min="0.05", max="0.99">
     </div>
     <div class="col-md-3 mb-3">
-      <label class="form-label">iou_input</label>
-      <input class="form-control" type="number" step="0.01" name="iou_input" value="0.2">
+      <label class="form-label">iou</label>
+      <input class="form-control" type="number" step="0.01" name="iou_input" value="0.27", min="0.1", max="0.99">
     </div>
     <div class="col-md-3 mb-3">
-      <label class="form-label">portion</label>
+      <label class="form-label">Loại Vật Thể</label>
       <select class="form-select" name="portion">
         <option>Lon & Chai</option>
-        <option>Thùng Hàng</option>
-        <option>Khối Hàng</option>
+        <option>Các Vật Thể Trong Diện POSM</option>
+        <option>Khối</option>
       </select>
     </div>
     <div class="col-md-3 mb-3">
-      <label class="form-label">repuirements_count</label>
-      <input class="form-control" type="number" name="repuirements_count" value="1">
+      <label class="form-label">Số lượng tối thiểu đạt</label>
+      <input class="form-control" type="number" name="repuirements_count" value="1", min="1">
     </div>
   </div>
 
